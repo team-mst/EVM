@@ -1,0 +1,19 @@
+{
+  "name": "walkingskeleton",
+  "version": "0.0.0",
+  "authors": [
+    "DionWhittall <dion@mstworld.com>"
+  ],
+  "description": "Skeleton Project",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "jquery": "~2.2.0",
+    "toastr": "~2.1.2",
+    "angular": "~1.4.9",
+    "angular-resource": "~1.4.9",
+    "angular-route": "~1.4.9",
+    "express": "~4.13.3",
+    "ejs": "~1.0.0"
+  }
+}

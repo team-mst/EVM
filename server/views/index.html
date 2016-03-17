@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../../styles/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../styles/animate.css/animate.min.css">
+    <link rel="stylesheet" href="../../styles/app.css" title="appcss">
+    <title>WEATHER STATION</title>
+
+    <script src="../../scripts/libs/jquery-2.1.1.js"></script>
+    <script src="../../scripts/knockout/knockout-3.2.0.js"></script>
+    <script src="../../scripts/knockout/knockout-mapping.js"></script>
+
+    <!-- SOCKET IO -->
+    <script src="../../scripts/socket.io/socket.io.js"></script>
+<!--    <script src=".../../styles/bootstrap/dist/js/bootstrap.min.js"></script>-->
+       <!--<script src="../../scripts/index.js"></script>-->
+    <script src="../../scripts/nav.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Test Application</title>
+</head>
+<body>
+    <h1>EVM Index</h1>
+    <div id="main-content">
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-12"> 
+                <img src="../../images/MST.png" style="float:left" />
+            </div>     
+        </div>
+
+        <div class="col-lg-12">
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>MST HEART RATE SENSOR</h5>
+                </div>
+            </div>
+        </div>
+
+         <div class="col-lg-3">
+            <div class="ibox ">
+              <div class="ibox-title">
+                <h5>LIVE: Score your match</h5>
+              </div>
+              <div class="ibox-content">
+                <a class="btn btn-success"onclick="load('main-content', 'page', 'pyrtest')">EVM PYR</a>
+              </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="ibox ">
+              <div class="ibox-title">
+                <h5>LIVE: Score your match</h5>
+              </div>
+              <div class="ibox-content">
+                <a class="btn btn-success"onclick="load('main-content', 'page', 'main')">Pulse</a>
+              </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="ibox ">
+              <div class="ibox-title">
+                <h5>LIVE: Score your match</h5>
+              </div>
+              <div class="ibox-content">
+                <a class="btn btn-success"onclick="load('main-content', 'page', 'pyrtest_mod')">EVM PYR MOD</a>
+              </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="ibox ">
+              <div class="ibox-title">
+                <h5>LIVE: Score your match</h5>
+              </div>
+              <div class="ibox-content">
+                <a class="btn btn-success"onclick="load('main-content', 'page', 'ECGgraph')">ECG GRAPH</a>
+              </div>
+            </div>
+        </div>
+
+
+</body>
+// <script type="text/javascript">
+//     ko.applyBindings(indexVM, document.getElementById('community-main'));
+// 	$('link[title=appcss]')[0].disabled=true;
+// </script>
+</html>

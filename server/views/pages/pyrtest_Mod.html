@@ -1,0 +1,300 @@
+<html>
+<head>
+	<title>pyrtest</title>
+	<style type="text/css">
+	body {
+		background-color: #eee
+	}
+
+	canvas {
+		background-color: #fff;
+		/*margin: 10px;*/
+	}
+	.wolo {
+		background-color: #fff;
+		box-shadow: 0 1px 10px 0 rgba(0,0,0,.1);
+		border-radius: 3px;
+	}
+	#sliders input {
+		width: 100%;
+	}
+	</style>
+</head>
+<body>
+
+<video id="webcam"></video>
+
+<div id='sliders'></div>
+
+<script type="text/javascript" src="../../scripts/compat.js"></script>
+<script type="text/javascript" src="../../scripts/pyramid.js"></script>
+        <script type="text/javascript" src="../../scripts/js/compatibility.js"></script>
+        <script type="text/javascript" src="../../scripts/js/vendor/numeric.js"></script>
+        <script type="text/javascript" src="../../scripts/js/vendor/svd.js"></script>
+        <script type="text/javascript" src="../../scripts/js/utils.js"></script>  
+        <script type="text/javascript" src="../../scripts/js/pulse.js"></script>    
+<script type="text/javascript">
+// lets do some fun
+var video = document.getElementById('webcam');
+var num_frames = 512;
+    var frame = 0;
+
+try {
+    var attempts = 0;
+    var readyListener = function(event) {
+        findVideoSize();
+    };
+    var findVideoSize = function() {
+        if(video.videoWidth > 0 && video.videoHeight > 0) {
+            video.removeEventListener('loadeddata', readyListener);
+            onDimensionsReady(video.videoWidth, video.videoHeight);
+        } else {
+            if(attempts < 10) {
+                attempts++;
+                setTimeout(findVideoSize, 200);
+            } else {
+                onDimensionsReady(640, 480);
+            }
+        }
+    };
+    var onDimensionsReady = function(width, height) {
+        // init_video_demo(width, height);
+        var s = Math.min(640 / video.videoWidth, 480 / video.videoHeight)
+        
+        var w = Math.floor(video.videoWidth * s >> 3) << 3,
+            h = Math.floor(video.videoHeight * s >> 3) << 3;
+        video.style.width = w + 'px'
+        // init_video_demo(Math.max(480, w), Math.max(480, h))
+        // init_video_demo(640, 480)
+        init_video_demo(Math.max(480, w), h)
+        
+        compatibility.requestAnimationFrame(tick);
+    };
+
+    video.addEventListener('loadeddata', readyListener);
+
+    compatibility.getUserMedia({video: true}, function(stream) {
+        try {
+            video.src = compatibility.URL.createObjectURL(stream);
+        } catch (error) {
+            video.src = stream;
+        }
+        setTimeout(function() {
+            video.play();
+        }, 500);
+    }, function (error) {
+        video.src = '../../images/face.mp4'
+        video.loop = 'loop'
+        video.autoplay = 'autoplay'
+
+    });
+} catch (error) {
+    
+}
+
+var m
+var derp
+var merp
+var alphas = []
+var sliders = []
+var levels = 9
+var red = [], green = [], blue = [];
+
+
+function init_video_demo(w,h){
+	for (var i = 0; i < levels; i++) {
+		alphas.push(25)
+	}
+
+	alphas.forEach(function(a,i){
+		var l = document.createElement('input')
+		l.type='range'
+		l.min=0
+		l.max=1000
+		l.value = 25
+		l.oninput = function(){
+			for (var j = i; j < alphas.length; j++) {
+				alphas[j] = +l.value
+				sliders[j].value = l.value
+			}
+			console.log(alphas)
+		}
+		document.getElementById('sliders').appendChild(l)
+		sliders.push(l)
+	})
+
+	m = Pyramid.pyramid(w,h,levels)
+	m.forEach(e=>{
+		document.body.appendChild(e.canvas)
+		e.canvas.style.width = w/3
+		e.canvas.style.height = h/3
+	})
+
+	derp = Pyramid.pyramid(w,h,levels)
+	// derp.forEach(e=>document.body.appendChild(e.canvas))
+
+	merp = Pyramid.pyramid(w,h,levels)
+
+	// merp.forEach(e=>document.body.appendChild(e.canvas))
+}
+
+
+var current_frame = 0;
+var frames_processed = 0;
+
+var coef1 = 0.17;
+var coef2 = 0.16;
+
+
+function tick() {
+    if (frame < 30) {
+    	compatibility.requestAnimationFrame(tick);
+        ++frame
+    } else if (frame < num_frames + 30 + 3) {
+        var f = frame - 30;
+
+    	compatibility.requestAnimationFrame(tick);
+    	// stat.new_frame();
+    	if (video.readyState === video.HAVE_ENOUGH_DATA) {
+	        // ctx.drawImage(video, 0, 0, 640, 480);
+	        // ctx.fillRect(0, 0, 640, 480)
+	        // var s = Math.min(640 / video.videoWidth, 480 / video.videoHeight)
+	        // var s = 0.01 // call this number for fun times
+	        // ctx.drawImage(video, 0, 0, video.videoWidth * s, video.videoHeight * s)
+        
+	        // evm()
+	        Pyramid.applyIm(video, m)
+			var redsum = 0, greensum = 0, bluesum = 0;
+
+
+	        var total = 0, count = 0;
+	        for(var k = 0; k < derp.length ; k++){
+	        	for (var i = 0; i < derp[k].ctx.realdata.length; i+=4) {
+
+					derp[k].ctx.realdata[i]   = derp[k].ctx.realdata[i]  * (1 - coef1) +  coef1 * m[k].ctx.realdata[i] 
+					derp[k].ctx.realdata[i+1] = derp[k].ctx.realdata[i+1] * (1 - coef1)  + coef1 * m[k].ctx.realdata[i+1] 
+					derp[k].ctx.realdata[i+2] = derp[k].ctx.realdata[i+2] * (1 - coef1)  + coef1 * m[k].ctx.realdata[i+2] 
+
+					merp[k].ctx.realdata[i]   = merp[k].ctx.realdata[i]  * (1 - coef2) +  coef2 * m[k].ctx.realdata[i]
+					merp[k].ctx.realdata[i+1] = merp[k].ctx.realdata[i+1] * (1 - coef2)  + coef2 * m[k].ctx.realdata[i+1] 
+					merp[k].ctx.realdata[i+2] = merp[k].ctx.realdata[i+2] * (1 - coef2)  + coef2 * m[k].ctx.realdata[i+2] 
+
+					// total += (m[k].ctx.realdata[i] - derp[k].ctx.realdata[i])
+					// count++
+
+					m[k].ctx.realdata[i]    += alphas[k] * ( - derp[k].ctx.realdata[i] + merp[k].ctx.realdata[i])
+					m[k].ctx.realdata[i+1]  += alphas[k] * ( - derp[k].ctx.realdata[i+1] + merp[k].ctx.realdata[i+1])
+					m[k].ctx.realdata[i+2]  += alphas[k] * ( - derp[k].ctx.realdata[i+2] + merp[k].ctx.realdata[i+2])
+
+					 redsum = m[k].ctx.realdata[i] 
+	                 greensum = m[k].ctx.realdata[i+1]
+	                 bluesum = m[k].ctx.realdata[i+2]
+				}	
+	        }
+
+
+	        derp[derp.length - 1].canvas = m[derp.length - 1].canvas
+			
+	        Pyramid.pyrUp(m)
+
+	        // if(frames_processed == 0){
+	        //     lowpass1.iirFilter(img_pyr, 1);
+	        //     lowpass2.iirFilter(img_pyr, 1);
+	        // }
+	        // frames_processed++
+	        red[f] = redsum;
+            green[f] = greensum;
+            blue[f] = bluesum;
+	        ++frame; 
+    	}
+	}
+	else if (frame === num_frames + 30 + 3) {
+	         //   video.pause();
+	            // video.src=null;
+	            findPulse(); 
+	}
+}
+
+function findPulse() {
+	  // Gaussian blur
+        var r = [], g = [], b = [];
+        for (i = 0; i < num_frames; i += 2) {
+            r[i/2]=(red[i] + 3*red[i+1]  + 3*red[i+2] + red[i+3]);
+            g[i/2]=(green[i] + 3*green[i+1]  + 3*green[i+2] + green[i+3]);
+            b[i/2]=(blue[i] + 3*blue[i+1]  + 3*blue[i+2] + blue[i+3]);
+        };
+
+        r = utils.normalize(utils.delinearize(r));
+        g = utils.normalize(utils.delinearize(g));
+        b = utils.normalize(utils.delinearize(b));
+
+        var signals = utils.PCA([r, g]);
+        var spectrum = signals.map(utils.spectrum);
+
+        var pulse=0, max=0, i;
+
+        for (i=0; i<num_frames;i++) {
+            var frequency=(60.0/num_frames)*(i+0.5);
+            if (frequency>0.5 && frequency<3) {
+                if (spectrum[1][i]>max) {
+                    max=spectrum[1][i];
+                    pulse=Math.round(frequency*60);
+                }
+            }
+        }
+
+        $('#pulse').html(pulse);
+        $('#result').show();
+}
+
+</script>
+<h1 id="result" style="display:none;text-align:center;">Pulse: <span id="pulse"></span></h1>
+<!-- <canvas class='wolo'></canvas> 
+<script type="text/javascript">
+var wolomanip =  document.querySelector('.wolo')
+wolomanip.width = 400
+wolomanip.height = 400
+wolomanip.style.width = 400/2
+wolomanip.style.height = 400/2
+
+var dragging = false
+wolomanip.onmousedown = function(e){
+	dragging = true
+    setparams(e)
+
+}
+wolomanip.onmouseup = function(e){
+	dragging = false
+}
+
+var wctx = wolomanip.getContext('2d')
+
+function setparams(e){
+	var rect = wolomanip.getBoundingClientRect()
+	var x = (e.clientX-rect.left)*2
+	var y = (e.clientY-rect.top)*2
+	
+	wctx.clearRect(0,0,wolomanip.width,wolomanip.height)
+	wctx.beginPath()
+	wctx.moveTo(x,y);
+	wctx.arc(x,y,5,0,2*Math.PI);
+	wctx.closePath()
+	wctx.fill()
+
+	coef1 = Math.log(x/wolomanip.width*2+1)
+	coef2 = Math.log(y/wolomanip.height*2+1)
+	yolo.innerHTML = coef1+' '+coef2
+}
+
+wolomanip.onmousemove = function(e){
+	if(dragging){
+        setparams(e)
+	}
+}
+
+</script>
+
+<div id="yolo"></div>
+
+</body>
+</html>
